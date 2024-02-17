@@ -1,4 +1,5 @@
 import Data.Maybe
+import GHC.Base (neChar)
 threeNplusOne :: Int -> Int
 threeNplusOne n = 3*n + 1
 
@@ -12,7 +13,9 @@ collatzNext n
     | even n = divideByTwo n
     | otherwise = Just (threeNplusOne n)
 
-collatzSeq :: Maybe Int -> [Maybe Int] -> [Maybe Int]
+collatzSeq :: Int -> [Int] -> Maybe [Int]
 collatzSeq n current
-    | n == Just 2 = current ++ [Just 2, n >>= collatzNext]
-    | otherwise = collatzSeq (n >>= collatzNext) (current ++ [n])
+    | n == 2 = sequence (map Just current ++ [Just 2, collatzNext n])
+    | otherwise = do
+            next <- (collatzNext n)
+            collatzSeq next (current ++ [n])
